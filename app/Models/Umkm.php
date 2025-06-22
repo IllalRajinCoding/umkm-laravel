@@ -23,8 +23,6 @@ class Umkm extends Model
         'status'
     ];
 
-    public $timestamps = false;
-
     public function pembina()
     {
         return $this->belongsTo(Pembina::class, 'pembina_id');

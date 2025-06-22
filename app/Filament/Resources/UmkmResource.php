@@ -28,6 +28,7 @@ class UmkmResource extends Resource
 
     protected static ?string $modelLabel = 'UMKM';
     protected static ?string $navigationGroup = 'Manajemen UMKM';
+    protected static ?int $navigationSort = 1;
 
 
     public static function form(Form $form): Form
