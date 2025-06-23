@@ -17,12 +17,14 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Illuminate\Support\Facades\Auth;
 
 class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
         return $panel
+            ->databaseNotifications()
             ->default()
             ->id('admin')
             ->path('admin')
@@ -55,6 +57,14 @@ class AdminPanelProvider extends PanelProvider
             ->topNavigation()
             ->authMiddleware([
                 Authenticate::class,
-            ]);
+            ])
+            ->authGuard('web')
+            ->databaseNotifications()
+            ->globalSearchKeyBindings(['command+k', 'ctrl+k'])
+            ->spa()
+            // Custom middleware untuk pengecekan role admin
+            ->middleware([
+                \App\Http\Middleware\CheckAdminRole::class,
+            ], isPersistent: true);
     }
 }

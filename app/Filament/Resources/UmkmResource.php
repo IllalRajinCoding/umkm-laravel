@@ -16,6 +16,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Collection;
+use Filament\Notifications\Notification;
 
 class UmkmResource extends Resource
 {
@@ -122,12 +123,13 @@ class UmkmResource extends Resource
                     ->sortable(),
 
                 // Menampilkan status dengan badge berwarna agar mudah dilihat
-                Tables\Columns\BadgeColumn::make('status')
-                    ->colors([
-                        'warning' => 'pending',
-                        'success' => 'approved',
-                        'danger' => 'rejected',
-                    ]),
+                Tables\Columns\TextColumn::make('status')
+                    ->badge()
+                    ->color(fn(string $state): string => match ($state) {
+                        'pending' => 'warning',
+                        'approved' => 'success',
+                        'rejected' => 'danger',
+                    }),
 
                 // Menampilkan kategori dari relasi
                 Tables\Columns\TextColumn::make('kategori.nama')
