@@ -3,17 +3,17 @@
         {{-- Header --}}
         <div class="text-center mb-8">
             <div class="flex justify-center mb-4">
-                <div class="p-3 bg-indigo-100 dark:bg-indigo-900 rounded-full">
-                    <svg class="w-8 h-8 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor"
+                <div class="p-3 bg-amber-100 dark:bg-amber-900 rounded-full">
+                    <svg class="w-8 h-8 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor"
                         viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
+                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
                         </path>
                     </svg>
                 </div>
             </div>
-            <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Daftarkan UMKM Baru</h1>
-            <p class="text-lg text-gray-600 dark:text-gray-300">Bergabunglah dengan komunitas UMKM digital Indonesia</p>
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Edit Data UMKM</h1>
+            <p class="text-lg text-gray-600 dark:text-gray-300">Perbarui informasi UMKM Anda</p>
         </div>
 
         {{-- Error Messages --}}
@@ -45,8 +45,8 @@
                     {{-- Section 1: Informasi Dasar UMKM --}}
                     <div class="border-b border-gray-900/10 dark:border-gray-700 pb-12">
                         <h2 class="text-base/7 font-semibold text-gray-900 dark:text-white">Informasi Dasar UMKM</h2>
-                        <p class="mt-1 text-sm/6 text-gray-600 dark:text-gray-400">Informasi ini akan ditampilkan secara
-                            publik, pastikan data yang Anda masukkan benar.</p>
+                        <p class="mt-1 text-sm/6 text-gray-600 dark:text-gray-400">Perbarui informasi dasar UMKM Anda.
+                        </p>
 
                         <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                             {{-- Nama UMKM --}}
@@ -96,6 +96,7 @@
                                 <x-input-label for="gambar" :value="__('Gambar/Logo UMKM')" />
 
                                 @if ($gambar)
+                                    {{-- New uploaded image --}}
                                     <div class="mt-2 flex items-center gap-x-3">
                                         <img src="{{ $gambar->temporaryUrl() }}"
                                             class="size-12 rounded-lg object-cover">
@@ -103,7 +104,17 @@
                                             {{ __('Hapus') }}
                                         </x-secondary-button>
                                     </div>
+                                @elseif($existing_gambar)
+                                    {{-- Existing image --}}
+                                    <div class="mt-2 flex items-center gap-x-3">
+                                        <img src="{{ Storage::url($existing_gambar) }}"
+                                            class="size-12 rounded-lg object-cover">
+                                        <x-secondary-button type="button" wire:click="removeExistingImage">
+                                            {{ __('Hapus') }}
+                                        </x-secondary-button>
+                                    </div>
                                 @else
+                                    {{-- Upload area --}}
                                     <div
                                         class="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 dark:border-gray-600 px-6 py-10">
                                         <div class="text-center">
@@ -184,8 +195,9 @@
                         {{ __('Batal') }}
                     </x-secondary-button>
 
-                    <x-primary-button wire:loading.attr="disabled">
-                        <span wire:loading.remove wire:target="save">{{ __('Daftarkan UMKM') }}</span>
+                    <x-primary-button wire:loading.attr="disabled"
+                        class="bg-amber-600 hover:bg-amber-500 focus:bg-amber-700 active:bg-amber-900">
+                        <span wire:loading.remove wire:target="save">{{ __('Perbarui UMKM') }}</span>
                         <span wire:loading wire:target="save" class="flex items-center gap-2">
                             <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
                                 <circle class="opacity-25" cx="12" cy="12" r="10"
@@ -194,7 +206,7 @@
                                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
                                 </path>
                             </svg>
-                            {{ __('Menyimpan...') }}
+                            {{ __('Memperbarui...') }}
                         </span>
                     </x-primary-button>
                 </div>
@@ -206,20 +218,9 @@
             <p class="text-sm text-gray-600 dark:text-gray-300">
                 Butuh bantuan?
                 <a href="#"
-                    class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 font-medium">Hubungi
+                    class="text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 font-medium">Hubungi
                     Support</a>
             </p>
         </div>
     </div>
-
-    {{-- JavaScript Redirect Fallback --}}
-    <script>
-        document.addEventListener('livewire:init', () => {
-            Livewire.on('redirect-to-dashboard', () => {
-                setTimeout(() => {
-                    window.location.href = '{{ route('dashboard') }}';
-                }, 100);
-            });
-        });
-    </script>
 </div>

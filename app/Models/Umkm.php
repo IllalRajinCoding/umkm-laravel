@@ -20,7 +20,8 @@ class Umkm extends Model
         'pembina_id',
         'kabkota_id',
         'kategori_umkm_id',
-        'status'
+        'status',
+        'gambar'
     ];
 
     public function pembina()

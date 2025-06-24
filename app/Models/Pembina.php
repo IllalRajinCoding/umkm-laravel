@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Pembina extends Model
 {
     protected $table = 'pembina';
+    public $timestamps = false;
 
     protected $fillable = [
         'nama',
@@ -20,4 +21,6 @@ class Pembina extends Model
     {
         return $this->hasMany(Umkm::class, 'pembina_id');
     }
+
+    
 }

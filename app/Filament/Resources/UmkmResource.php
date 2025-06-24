@@ -8,6 +8,7 @@ use App\Models\Umkm;
 use App\Models\User;
 use App\Models\KategoriUmkm;
 use App\Models\Kabkota;
+use App\Models\Pembina;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -17,6 +18,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Collection;
 use Filament\Notifications\Notification;
+use Filament\Tables\Columns\ImageColumn;
 
 class UmkmResource extends Resource
 {
@@ -36,7 +38,6 @@ class UmkmResource extends Resource
     {
         return $form
             ->schema([
-                // Mengelompokkan field dalam sebuah Card untuk tampilan yang lebih rapi
                 Forms\Components\Section::make('Informasi Dasar UMKM')
                     ->description('Isi data utama terkait UMKM yang didaftarkan.')
                     ->schema([
@@ -51,15 +52,20 @@ class UmkmResource extends Resource
                             ->required()
                             ->maxLength(100),
 
-                        // Dropdown untuk Kategori, mengambil dari tabel relasi
+                        // == TAMBAHKAN INPUT GAMBAR DI SINI ==
+                        Forms\Components\FileUpload::make('gambar')
+                            ->label('Logo/Gambar UMKM')
+                            ->directory('umkm-images') // Simpan di folder storage/app/public/umkm-images
+                            ->image()
+                            ->imageEditor() // Aktifkan editor gambar sederhana
+                            ->maxSize(10240), // Batas ukuran 2MB
+
                         Forms\Components\Select::make('kategori_umkm_id')
                             ->label('Kategori UMKM')
                             ->options(KategoriUmkm::all()->pluck('nama', 'id'))
                             ->searchable()
                             ->required(),
 
-
-                        // Dropdown untuk Kabupaten/Kota
                         Forms\Components\Select::make('kabkota_id')
                             ->label('Kabupaten/Kota')
                             ->options(Kabkota::all()->pluck('nama', 'id'))
@@ -73,7 +79,11 @@ class UmkmResource extends Resource
                         Forms\Components\TextInput::make('modal')
                             ->numeric()
                             ->prefix('Rp'),
-
+                        Forms\Components\Select::make('pembina_id')
+                            ->label('Pembina UMKM')
+                            ->options(Pembina::all()->pluck('nama', 'id'))
+                            ->searchable()
+                            ->nullable(),
                         Forms\Components\Select::make('rating')
                             ->options([
                                 1 => '1',
@@ -83,7 +93,7 @@ class UmkmResource extends Resource
                                 5 => '5'
                             ])
                             ->required()
-                    ])->columns(2), // Membuat layout form menjadi 2 kolom
+                    ])->columns(2),
 
                 Forms\Components\Section::make('Kontak & Status')
                     ->schema([
@@ -96,7 +106,6 @@ class UmkmResource extends Resource
                             ->nullable()
                             ->maxLength(45),
 
-                        // Dropdown untuk mengatur status UMKM
                         Forms\Components\Select::make('status')
                             ->options([
                                 'pending' => 'Pending',
@@ -112,17 +121,19 @@ class UmkmResource extends Resource
     {
         return $table
             ->columns([
-                // Kolom untuk menampilkan nama UMKM, bisa dicari
+                // == TAMBAHKAN KOLOM GAMBAR DI SINI ==
+                ImageColumn::make('gambar')
+                    ->label('Gambar')
+                    ->square(),
+
                 Tables\Columns\TextColumn::make('nama')
                     ->label('Nama UMKM')
                     ->searchable(),
 
-                // Menampilkan nama pemilik dari relasi User
                 Tables\Columns\TextColumn::make('user.name')
                     ->label('Pemilik')
                     ->sortable(),
 
-                // Menampilkan status dengan badge berwarna agar mudah dilihat
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
                     ->color(fn(string $state): string => match ($state) {
@@ -131,12 +142,12 @@ class UmkmResource extends Resource
                         'rejected' => 'danger',
                     }),
 
-                // Menampilkan kategori dari relasi
                 Tables\Columns\TextColumn::make('kategori.nama')
                     ->label('Kategori'),
+                Tables\Columns\TextColumn::make('pembina.nama')
+                    ->label('Pembina'),
             ])
             ->filters([
-                // Filter berdasarkan status untuk memudahkan admin
                 Tables\Filters\SelectFilter::make('status')
                     ->options([
                         'pending' => 'Pending',
@@ -145,39 +156,45 @@ class UmkmResource extends Resource
                     ]),
             ])
             ->actions([
-                // Grup Aksi untuk setiap baris data
                 Tables\Actions\ActionGroup::make([
                     Tables\Actions\ViewAction::make(),
                     Tables\Actions\EditAction::make(),
-                    // Aksi untuk menyetujui UMKM
                     Tables\Actions\Action::make('Approve')
                         ->action(function (Umkm $record) {
                             $record->status = 'approved';
                             $record->save();
+                            // Kirim notifikasi ke pemilik UMKM
+                            Notification::make()
+                                ->title('UMKM Anda Telah Disetujui!')
+                                ->body('Selamat, UMKM "' . $record->nama . '" telah disetujui dan sekarang tampil untuk publik.')
+                                ->success()
+                                ->sendToDatabase($record->user);
                         })
                         ->requiresConfirmation()
                         ->color('success')
                         ->icon('heroicon-o-check-badge')
-                        // Aksi ini hanya akan muncul jika status UMKM adalah 'pending'
                         ->visible(fn(Umkm $record): bool => $record->status === 'pending'),
 
-                    // Aksi untuk menolak UMKM
                     Tables\Actions\Action::make('Reject')
                         ->action(function (Umkm $record) {
                             $record->status = 'rejected';
                             $record->save();
+                            // Kirim notifikasi ke pemilik UMKM
+                            Notification::make()
+                                ->title('Pendaftaran UMKM Ditolak')
+                                ->body('Mohon maaf, pendaftaran UMKM "' . $record->nama . '" ditolak. Silakan periksa kembali data Anda atau hubungi support.')
+                                ->danger()
+                                ->sendToDatabase($record->user);
                         })
                         ->requiresConfirmation()
                         ->color('danger')
                         ->icon('heroicon-o-x-circle')
-                        // Aksi ini hanya akan muncul jika status UMKM adalah 'pending'
                         ->visible(fn(Umkm $record): bool => $record->status === 'pending'),
                 ]),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
-                    // Aksi massal untuk menyetujui beberapa UMKM sekaligus
                     Tables\Actions\BulkAction::make('approve_selected')
                         ->label('Approve Selected')
                         ->icon('heroicon-o-check-badge')

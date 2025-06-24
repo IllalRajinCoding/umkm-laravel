@@ -1,223 +1,119 @@
 {{-- filepath: c:\Users\Hype G12\Desktop\uas-laravel\resources\views\dashboard.blade.php --}}
 <x-app-layout>
-    {{-- Header dengan gradient dan shadow yang lebih menarik --}}
     <x-slot name="header">
-        <div class="bg-gradient-to-r from-blue-600 to-indigo-700 -mx-4 -mt-4 px-4 pt-4 pb-6 mb-6">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                {{-- Bagian Kiri: Judul dengan style yang lebih menarik --}}
-                <div class="text-white">
-                    <div class="flex items-center gap-3">
-                        <div class="p-2 bg-white/20 rounded-lg">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
-                                </path>
-                            </svg>
-                        </div>
-                        <div>
-                            <h2 class="font-bold text-2xl">
-                                Selamat Datang, {{ Auth::user()->name }}!
-                            </h2>
-                            <p class="text-blue-100 text-sm mt-1">
-                                Kelola dan pantau UMKM Anda dengan mudah
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Bagian Kanan: Tombol dengan style yang lebih modern --}}
-                <div class="flex items-center gap-3">
-                    <a href="{{ route('umkm.pendaftaran') }}"
-                        class="inline-flex items-center gap-2 bg-white text-blue-600 hover:bg-blue-50 font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                        </svg>
-                        Daftarkan UMKM Baru
-                    </a>
-                </div>
-            </div>
-        </div>
+        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+            {{ __('Dashboard') }}
+        </h2>
     </x-slot>
 
-    {{-- Stats Cards Section --}}
-    <div class="py-6">
+    <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            {{-- Statistics Cards --}}
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                {{-- Total UMKM Card --}}
-                <div
-                    class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow">
-                    <div class="flex items-center justify-between">
+            {{-- Notifikasi Success --}}
+            @if (session()->has('success'))
+                <div class="mb-6 bg-green-50 dark:bg-green-900/20 p-4 rounded-lg" x-data="{ show: true }" x-show="show"
+                    x-transition:enter="transition ease-out duration-300"
+                    x-transition:enter-start="opacity-0 transform scale-95"
+                    x-transition:enter-end="opacity-100 transform scale-100">
+                    <div class="flex items-center">
+                        <svg class="h-5 w-5 text-green-400 mr-3" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd"
+                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.06 0l4.25-5.85z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        <p class="text-sm text-green-800 dark:text-green-200">{{ session('success') }}</p>
+                        <button @click="show = false"
+                            class="ml-auto text-green-600 dark:text-green-400 hover:text-green-800 dark:hover:text-green-200">
+                            <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            @endif
+
+            {{-- Welcome Section --}}
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                    <div class="flex justify-between items-center">
                         <div>
-                            <p class="text-sm font-medium text-gray-600">Total UMKM Saya</p>
-                            <p class="text-3xl font-bold text-gray-900">{{ Auth::user()->umkm->count() }}</p>
-                            <p class="text-xs text-gray-500 mt-1">UMKM yang terdaftar</p>
+                            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Selamat Datang,
+                                {{ Auth::user()->name }}!</h1>
+                            <p class="text-gray-600 dark:text-gray-400 mt-1">Kelola UMKM Anda dengan mudah</p>
                         </div>
-                        <div class="p-3 bg-blue-100 rounded-xl">
-                            <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <a href="{{ route('umkm.pendaftaran') }}"
+                            class="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                            + Daftarkan UMKM
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Stats Cards --}}
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
+                    <div class="flex items-center">
+                        <div class="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
+                            <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
                                 </path>
                             </svg>
                         </div>
+                        <div class="ml-4">
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Total UMKM</p>
+                            <p class="text-2xl font-bold text-gray-900 dark:text-white">
+                                {{ Auth::user()->umkm->count() }}</p>
+                        </div>
                     </div>
                 </div>
 
-                {{-- Pending UMKM Card --}}
-                <div
-                    class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm font-medium text-gray-600">Menunggu Persetujuan</p>
-                            <p class="text-3xl font-bold text-orange-600">
-                                {{ Auth::user()->umkm->where('status', 'pending')->count() }}</p>
-                            <p class="text-xs text-gray-500 mt-1">Sedang dalam review</p>
-                        </div>
-                        <div class="p-3 bg-orange-100 rounded-xl">
-                            <svg class="w-8 h-8 text-orange-600" fill="none" stroke="currentColor"
-                                viewBox="0 0 24 24">
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
+                    <div class="flex items-center">
+                        <div class="p-2 bg-yellow-100 dark:bg-yellow-900 rounded-lg">
+                            <svg class="w-6 h-6 text-yellow-600 dark:text-yellow-400" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
                         </div>
+                        <div class="ml-4">
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Menunggu Persetujuan</p>
+                            <p class="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
+                                {{ Auth::user()->umkm->where('status', 'pending')->count() }}</p>
+                        </div>
                     </div>
                 </div>
 
-                {{-- Approved UMKM Card --}}
-                <div
-                    class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm font-medium text-gray-600">UMKM Aktif</p>
-                            <p class="text-3xl font-bold text-green-600">
-                                {{ Auth::user()->umkm->where('status', 'approved')->count() }}</p>
-                            <p class="text-xs text-gray-500 mt-1">Sudah disetujui</p>
-                        </div>
-                        <div class="p-3 bg-green-100 rounded-xl">
-                            <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor"
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
+                    <div class="flex items-center">
+                        <div class="p-2 bg-green-100 dark:bg-green-900 rounded-lg">
+                            <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor"
                                 viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
                         </div>
-                    </div>
-                </div>
-            </div>
-
-            {{-- Quick Actions --}}
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                {{-- Quick Action 1 --}}
-                <div class="bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl p-6 text-white">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <h3 class="text-lg font-semibold mb-2">Daftarkan UMKM Baru</h3>
-                            <p class="text-purple-100 text-sm mb-4">Mulai dengan mendaftarkan bisnis UMKM Anda</p>
-                            <a href="{{ route('umkm.pendaftaran') }}"
-                                class="inline-flex items-center gap-2 bg-white text-purple-600 font-semibold py-2 px-4 rounded-lg hover:bg-purple-50 transition-colors">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                                </svg>
-                                Daftar Sekarang
-                            </a>
-                        </div>
-                        <div class="hidden md:block">
-                            <svg class="w-16 h-16 text-white opacity-20" fill="none" stroke="currentColor"
-                                viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
-                                </path>
-                            </svg>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Quick Action 2 --}}
-                <div class="bg-gradient-to-r from-blue-500 to-cyan-500 rounded-2xl p-6 text-white">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <h3 class="text-lg font-semibold mb-2">Kelola UMKM</h3>
-                            <p class="text-blue-100 text-sm mb-4">Lihat dan kelola semua UMKM yang Anda miliki</p>
-                            <a href="#umkm-list"
-                                class="inline-flex items-center gap-2 bg-white text-blue-600 font-semibold py-2 px-4 rounded-lg hover:bg-blue-50 transition-colors">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2">
-                                    </path>
-                                </svg>
-                                Lihat UMKM
-                            </a>
-                        </div>
-                        <div class="hidden md:block">
-                            <svg class="w-16 h-16 text-white opacity-20" fill="none" stroke="currentColor"
-                                viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01">
-                                </path>
-                            </svg>
+                        <div class="ml-4">
+                            <p class="text-sm text-gray-600 dark:text-gray-400">UMKM Aktif</p>
+                            <p class="text-2xl font-bold text-green-600 dark:text-green-400">
+                                {{ Auth::user()->umkm->where('status', 'approved')->count() }}</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {{-- Main Content Card --}}
-            <div id="umkm-list" class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                {{-- Card Header --}}
-                <div class="px-6 py-4 border-b border-gray-100 bg-gray-50">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <h3 class="text-lg font-semibold text-gray-900">UMKM Saya</h3>
-                            <p class="text-sm text-gray-600 mt-1">Kelola semua UMKM yang telah Anda daftarkan</p>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <span
-                                class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                {{ Auth::user()->umkm->count() }} Total
-                            </span>
-                        </div>
-                    </div>
+            {{-- UMKM List --}}
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">UMKM Saya</h3>
                 </div>
-
-                {{-- Card Content --}}
                 <div class="p-6">
                     @livewire('umkm.user-umkm')
                 </div>
             </div>
         </div>
     </div>
-
-    {{-- Custom Styles --}}
-    @push('styles')
-        <style>
-            /* Custom scrollbar */
-            ::-webkit-scrollbar {
-                width: 6px;
-            }
-
-            ::-webkit-scrollbar-track {
-                background: #f1f5f9;
-            }
-
-            ::-webkit-scrollbar-thumb {
-                background: #cbd5e1;
-                border-radius: 3px;
-            }
-
-            ::-webkit-scrollbar-thumb:hover {
-                background: #94a3b8;
-            }
-
-            /* Smooth transitions */
-            * {
-                transition-property: all;
-                transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-            }
-
-            /* Scroll behavior */
-            html {
-                scroll-behavior: smooth;
-            }
-        </style>
-    @endpush
 </x-app-layout>

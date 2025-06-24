@@ -2,40 +2,90 @@
 
 namespace App\Livewire\Umkm;
 
-use App\Models\Umkm;
 use Livewire\Component;
 use Livewire\Attributes\Layout;
+use App\Models\Umkm;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log; // Tambahkan import Log
 
 #[Layout('layouts.app')]
 class UserUmkm extends Component
 {
+    public $showDeleteModal = false;
+    public $umkmToDelete = null;
+
+    public function edit($umkmId)
+    {
+        $umkm = Umkm::where('id', $umkmId)
+            ->where('user_id', Auth::id())
+            ->first();
+
+        if (!$umkm) {
+            session()->flash('error', 'UMKM tidak ditemukan atau Anda tidak memiliki akses.');
+            return;
+        }
+
+        // Debug log
+        Log::info('Redirecting to edit UMKM: ' . $umkm->id);
+
+        // Redirect ke halaman edit
+        return $this->redirect(route('umkm.edit', $umkm->id), navigate: true);
+    }
+
+    public function confirmDelete($umkmId)
+    {
+        $this->umkmToDelete = Umkm::where('id', $umkmId)
+            ->where('user_id', Auth::id())
+            ->first();
+
+        if (!$this->umkmToDelete) {
+            session()->flash('error', 'UMKM tidak ditemukan atau Anda tidak memiliki akses.');
+            return;
+        }
+
+        $this->showDeleteModal = true;
+    }
+
+    public function delete()
+    {
+        if (!$this->umkmToDelete) {
+            $this->showDeleteModal = false;
+            return;
+        }
+
+        try {
+            // Hapus file gambar jika ada
+            if ($this->umkmToDelete->gambar) {
+                Storage::disk('public')->delete($this->umkmToDelete->gambar);
+            }
+
+            // Hapus UMKM
+            $this->umkmToDelete->delete();
+
+            session()->flash('success', 'UMKM berhasil dihapus.');
+            
+            $this->showDeleteModal = false;
+            $this->umkmToDelete = null;
+
+        } catch (\Exception $e) {
+            Log::error('Error deleting UMKM: ' . $e->getMessage());
+            session()->flash('error', 'Terjadi kesalahan saat menghapus UMKM.');
+        }
+    }
+
+    public function cancelDelete()
+    {
+        $this->showDeleteModal = false;
+        $this->umkmToDelete = null;
+    }
+
     public function render()
     {
         $umkms = Umkm::where('user_id', Auth::id())
-            ->latest()
+            ->orderBy('created_at', 'desc')
             ->get();
 
-        return view('livewire.umkm.user-umkm', [
-            'umkms' => $umkms,
-        ]);
-    }
-
-    public function delete($umkmId)
-    {
-        // 1. Temukan data UMKM yang ingin dihapus
-        $umkm = Umkm::findOrFail($umkmId);
-
-        // 2. Lakukan Pengecekan Otorisasi!
-        //    Perintah ini akan secara otomatis memanggil metode 'delete' di UmkmPolicy.
-        //    Jika aturan mengizinkan (return true), kode akan lanjut.
-        //    Jika tidak (return false), Laravel akan otomatis menampilkan halaman error "403 Forbidden".
-        $this->authorize('delete', $umkm);
-
-        // 3. Jika diizinkan, baru hapus data
-        $umkm->delete();
-
-        // Beri pesan sukses
-        session()->flash('success', 'UMKM berhasil dihapus.');
+        return view('livewire.umkm.user-umkm', compact('umkms'));
     }
 }

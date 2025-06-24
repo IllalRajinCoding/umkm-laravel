@@ -29,16 +29,29 @@ class PembinaResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('nama')
+                    ->label('Nama Pembina')
                     ->required()
                     ->maxLength(50),
-                Forms\Components\TextInput::make('gender')
-                    ->maxLength(1)
+                Forms\Components\Select::make('gender')
+                    ->label('Jenis Kelamin')
+                    ->options([
+                        'L' => 'Laki-laki',
+                        'P' => 'Perempuan',
+                    ])
                     ->default(null),
-                Forms\Components\DatePicker::make('tgl_lahir'),
+                Forms\Components\DatePicker::make('tgl_lahir')
+                    ->label('Tanggal Lahir')
+                    ->required()
+                    ->default(null),
                 Forms\Components\TextInput::make('tmp_lahir')
+                    ->label('Tempat Lahir')
+                    ->required()
                     ->maxLength(30)
                     ->default(null),
                 Forms\Components\TextInput::make('keahlian')
+                    ->label('Keahlian')
+                    ->required()
+
                     ->maxLength(200)
                     ->default(null),
             ]);
@@ -51,7 +64,14 @@ class PembinaResource extends Resource
                 Tables\Columns\TextColumn::make('nama')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('gender')
-                    ->searchable(),
+                    ->label('Jenis Kelamin')
+                    ->getStateUsing(function ($record) {
+                        return match ($record->gender) {
+                            'L' => 'Laki-laki',
+                            'P' => 'Perempuan',
+                            default => $record->gender ?? '-',
+                        };
+                    }),
                 Tables\Columns\TextColumn::make('tgl_lahir')
                     ->date()
                     ->sortable(),

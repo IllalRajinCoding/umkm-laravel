@@ -7,18 +7,18 @@ use Livewire\Attributes\Layout;
 use App\Models\Umkm;
 use App\Models\KategoriUmkm;
 use App\Models\Kabkota;
-use App\Models\User;
+use App\Models\Pembina;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use Livewire\WithFileUploads;
-use App\Models\Pembina;
 
 #[Layout('layouts.app')]
-class Pendaftaran extends Component
+class Edit extends Component
 {
     use WithFileUploads;
 
+    public $umkm;
     public $nama = '';
     public $kategori_umkm_id = '';
     public $kabkota_id = '';
@@ -27,6 +27,7 @@ class Pendaftaran extends Component
     public $website = '';
     public $email = '';
     public $gambar;
+    public $existing_gambar = '';
 
     protected $messages = [
         'nama.required' => 'Nama UMKM wajib diisi.',
@@ -54,19 +55,35 @@ class Pendaftaran extends Component
         'modal' => 'nullable|numeric|min:0',
         'website' => 'nullable|url|max:45',
         'email' => 'nullable|email|max:45',
-        'gambar' => 'nullable|image|max:10240'
+        'gambar' => 'nullable|image|max:10240',
     ];
+
+    public function mount($id)
+    {
+        $this->umkm = Umkm::where('id', $id)
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
+
+
+        // Populate form fields
+        $this->nama = $this->umkm->nama;
+        $this->kategori_umkm_id = $this->umkm->kategori_umkm_id;
+        $this->kabkota_id = $this->umkm->kabkota_id;
+        $this->alamat = $this->umkm->alamat;
+        $this->modal = $this->umkm->modal;
+        $this->website = $this->umkm->website;
+        $this->email = $this->umkm->email;
+        $this->existing_gambar = $this->umkm->gambar; // Set existing image
+    }
 
     public function updated($propertyName)
     {
         $this->validateOnly($propertyName);
     }
 
-
-    public function resetForm()
+    public function removeExistingImage()
     {
-        $this->reset(['nama', 'kategori_umkm_id', 'kabkota_id', 'alamat', 'modal', 'website', 'email', 'gambar']);
-        $this->resetErrorBag();
+        $this->existing_gambar = '';
     }
 
     public function save()
@@ -75,59 +92,56 @@ class Pendaftaran extends Component
             // Validate data
             $validatedData = $this->validate();
 
-            // Check for existing pending UMKM
-            $existingPendingUmkm = Umkm::where('user_id', Auth::id())
-                ->where('status', 'pending')
-                ->exists();
-
-            if ($existingPendingUmkm) {
-                $this->addError('general', 'Anda masih memiliki pendaftaran UMKM yang menunggu persetujuan.');
-                return;
-            }
-
             // Handle file upload
             if ($this->gambar) {
+                // Delete old image if exists
+                if ($this->umkm->gambar) {
+                    Storage::disk('public')->delete($this->umkm->gambar);
+                }
                 $gambarPath = $this->gambar->store('umkm-images', 'public');
                 $validatedData['gambar'] = $gambarPath;
+            } elseif (empty($this->existing_gambar)) {
+                // If existing image was removed and no new image uploaded
+                if ($this->umkm->gambar) {
+                    Storage::disk('public')->delete($this->umkm->gambar);
+                }
+                $validatedData['gambar'] = null;
+            } else {
+                // Keep existing image
+                unset($validatedData['gambar']);
             }
-
-            // Add user and status
-            $validatedData['user_id'] = Auth::id();
-            $validatedData['status'] = 'pending';
 
             // Convert modal to float if exists
             if (!empty($validatedData['modal'])) {
                 $validatedData['modal'] = (float) $validatedData['modal'];
             }
 
-            // Create UMKM
-            $umkm = Umkm::create($validatedData);
+            // Update UMKM
+            $this->umkm->update($validatedData);
 
-            Log::info('UMKM created successfully', ['umkm_id' => $umkm->id]);
+            Log::info('UMKM updated successfully', ['umkm_id' => $this->umkm->id]);
 
             // Set session flash message
-            session()->flash('success', 'UMKM berhasil didaftarkan dan sedang menunggu persetujuan.');
+            session()->flash('success', 'Data UMKM berhasil diperbarui.');
 
-            // Use JavaScript redirect as fallback
-            $this->dispatch('redirect-to-dashboard');
-
-            // Also try Livewire redirect
+            // Redirect to dashboard
             return $this->redirectRoute('dashboard');
         } catch (\Illuminate\Validation\ValidationException $e) {
             // Re-throw validation exceptions so they show in the form
             throw $e;
         } catch (\Exception $e) {
-            Log::error('Error creating UMKM: ' . $e->getMessage(), [
+            Log::error('Error updating UMKM: ' . $e->getMessage(), [
                 'exception' => $e,
+                'umkm_id' => $this->umkm->id,
                 'user_id' => Auth::id()
             ]);
-            $this->addError('general', 'Terjadi kesalahan saat mendaftarkan UMKM. Silakan coba lagi.');
+            $this->addError('general', 'Terjadi kesalahan saat memperbarui UMKM. Silakan coba lagi.');
         }
     }
 
     public function render()
     {
-        return view('livewire.umkm.pendaftaran', [
+        return view('livewire.umkm.edit', [
             'kategori_list' => KategoriUmkm::orderBy('nama')->get(),
             'kabkota_list' => Kabkota::orderBy('nama')->get(),
         ]);
