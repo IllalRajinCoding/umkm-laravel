@@ -8,7 +8,7 @@ use App\Livewire\Umkm\UserUmkm;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [LandingPageController::class, 'index'])->name('landing');
-Route::get('/umkm/{id}', [UmkmController::class, 'show'])->name('umkm.show');
+Route::get('/umkms/{id}', [UmkmController::class, 'show'])->name('umkm.show');
 Route::get('/pembina', [App\Http\Controllers\PembinaController::class, 'index'])->name('pembina.index');
 Route::get('/pembina/{id}', [App\Http\Controllers\PembinaController::class, 'show'])->name('pembina.detail');
 
