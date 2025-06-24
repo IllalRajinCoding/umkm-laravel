@@ -1,4 +1,3 @@
-{{-- filepath: resources/views/pembina/index.blade.php --}}
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 

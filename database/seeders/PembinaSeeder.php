@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Pembina;
 use Faker\Factory as Faker;
+use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
 class PembinaSeeder extends Seeder
@@ -72,8 +72,8 @@ class PembinaSeeder extends Seeder
             'Ambon'
         ];
 
-        // Create 30 sample pembina records
-        for ($i = 0; $i < 30; $i++) {
+        // Create 5 sample pembina records
+        for ($i = 0; $i < 5; $i++) {
             // Randomly select 1-3 areas of expertise
             $expertiseCount = rand(1, 3);
             $selectedExpertise = $faker->randomElements($keahlian, $expertiseCount);
@@ -92,7 +92,7 @@ class PembinaSeeder extends Seeder
             ]);
         }
 
-        // Add some specific/named mentors for testing or demonstration
+        // Add 5 specific/named mentors
         $specificMentors = [
             [
                 'nama' => 'Dr. Hendra Wijaya',
@@ -135,6 +135,6 @@ class PembinaSeeder extends Seeder
             Pembina::create($mentor);
         }
 
-        $this->command->info('Successfully inserted 35 pembina records');
+        $this->command->info('Successfully inserted 10 pembina records');
     }
 }
