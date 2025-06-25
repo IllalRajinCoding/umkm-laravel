@@ -6,38 +6,41 @@ UMKM Management System adalah aplikasi berbasis web yang dirancang untuk memudah
 
 ## Fitur Utama
 
-- **Autentikasi Pengguna**: Sistem login dan registrasi yang aman
-- **Dashboard Interaktif**: Tampilan ringkas informasi dan statistik UMKM
-- **Pendaftaran UMKM**: Formulir lengkap untuk mendaftarkan usaha baru
-- **Manajemen UMKM**: Pengelolaan data usaha dengan mudah
-- **Sistem Persetujuan**: Alur kerja persetujuan UMKM oleh administrator
-- **Kategorisasi**: Pengelompokan UMKM berdasarkan jenis usaha
-- **Manajemen Regional**: Pembagian berdasarkan kabupaten/kota
-- **Testimoni Pengguna**: Fitur untuk berbagi pengalaman antar pengguna
+-   **Autentikasi Pengguna**: Sistem login dan registrasi yang aman
+-   **Dashboard Interaktif**: Tampilan ringkas informasi dan statistik UMKM
+-   **Pendaftaran UMKM**: Formulir lengkap untuk mendaftarkan usaha baru
+-   **Manajemen UMKM**: Pengelolaan data usaha dengan mudah
+-   **Sistem Persetujuan**: Alur kerja persetujuan UMKM oleh administrator
+-   **Kategorisasi**: Pengelompokan UMKM berdasarkan jenis usaha
+-   **Manajemen Regional**: Pembagian berdasarkan kabupaten/kota
+-   **Testimoni Pengguna**: Fitur untuk berbagi pengalaman antar pengguna
 
 ## Teknologi
 
-- **Framework**: Laravel
-- **Frontend**: Blade + Livewire + Alpine.js
-- **Styling**: Tailwind CSS
-- **Database**: MySQL
-- **Authentication**: Laravel Breeze
+-   **Framework**: Laravel
+-   **Frontend**: Blade + Livewire + Alpine.js
+-   **Styling**: Tailwind CSS
+-   **Database**: MySQL
+-   **Authentication**: Laravel Breeze
 
 ## Instalasi
 
 1. Clone repositori:
+
 ```bash
 git clone https://github.com/yourusername/umkm-management.git
 cd umkm-management
 ```
 
 2. Install depedency:
+
 ```bash
 composer install
 npm install
 ```
 
 3. Salin file .env:
+
 ```bash
 cp .env.example .env
 ```
@@ -45,25 +48,31 @@ cp .env.example .env
 4. Konfigurasi database dan aplikasi di file .env
 
 5. Generate application key:
+
 ```bash
 php artisan key:generate
 ```
 
 6. Jalankan Seeder dan migrate
+
 ```bash
 php artisan migrate --seed
 ```
+
 7. Compile Aset:
+
 ```bash
 npm run build
 ```
 
 8. Jalankan aplikasi:
+
 ```bash
 php artisan serve
 ```
 
 # Penggunaan
+
 Registrasi/Login: Buat akun atau masuk dengan akun yang sudah ada
 Dashboard: Lihat statistik dan informasi UMKM Anda
 Pendaftaran UMKM: Klik tombol "Daftarkan UMKM" untuk menambahkan usaha baru
@@ -71,6 +80,8 @@ Manajemen UMKM: Kelola informasi usaha Anda melalui dashboard
 Testimoni: Bagikan pengalaman Anda menggunakan platform
 
 ## Struktur Folder
+
+```
 umkm-laravel/
 ├── app/
 │   ├── Console/
@@ -167,4 +178,4 @@ umkm-laravel/
 ├── package.json
 ├── README.md
 └── tailwind.config.js
-
+```
