@@ -74,7 +74,7 @@ Testimoni: Bagikan pengalaman Anda menggunakan platform
 ## Struktur Folder
 
 ```
-umkm-management/
+umkm-laravel/
 ├── app/
 │   ├── Console/
 │   ├── Exceptions/
