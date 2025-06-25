@@ -7,11 +7,6 @@ use Illuminate\Http\Request;
 
 class LandingPageController extends Controller
 {
-    /**
-     * Menampilkan halaman utama (landing page).
-     *
-     * @return \Illuminate\View\View
-     */
     public function index()
     {
         // 1. Ambil semua data UMKM dari database HANYA yang statusnya 'approved'.

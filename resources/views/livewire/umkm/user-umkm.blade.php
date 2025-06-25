@@ -1,6 +1,4 @@
-{{-- filepath: c:\Users\Hype G12\Desktop\uas-laravel\resources\views\livewire\umkm\user-umkm.blade.php --}}
 <div>
-    {{-- Custom CSS untuk animasi tambahan --}}
     <style>
         @keyframes fade-in {
             from {

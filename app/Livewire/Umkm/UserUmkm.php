@@ -7,7 +7,7 @@ use Livewire\Attributes\Layout;
 use App\Models\Umkm;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Log; // Tambahkan import Log
+use Illuminate\Support\Facades\Log;
 
 #[Layout('layouts.app')]
 class UserUmkm extends Component

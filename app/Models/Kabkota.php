@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Kabkota extends Model
 {
-    // Penambahan trait HasFactory, ini adalah standar praktik terbaik di Laravel
     use HasFactory;
 
     /**
