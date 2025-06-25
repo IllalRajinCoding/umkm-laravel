@@ -70,10 +70,7 @@ Pendaftaran UMKM: Klik tombol "Daftarkan UMKM" untuk menambahkan usaha baru
 Manajemen UMKM: Kelola informasi usaha Anda melalui dashboard
 Testimoni: Bagikan pengalaman Anda menggunakan platform
 
-```markdown
 ## Struktur Folder
-
-```
 umkm-laravel/
 ├── app/
 │   ├── Console/
